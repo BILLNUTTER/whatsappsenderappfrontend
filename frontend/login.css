@@ -1,0 +1,97 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url("https://desku.io/wp-content/uploads/2023/03/How-to-create-Whatsapp-Automation_.png")
+      no-repeat center center fixed;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Clear and bright glass container */
+.container {
+  width: 100%;
+  max-width: 450px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.95); /* brighter than before */
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  color: #222;
+  text-align: center;
+}
+
+/* Heading */
+.container h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #075e54;
+}
+
+/* Input fields */
+.container input {
+  width: 100%;
+  padding: 14px 16px;
+  margin: 12px 0;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #fff;
+  color: #333;
+  font-size: 15px;
+  transition: 0.3s;
+}
+
+.container input::placeholder {
+  color: #999;
+}
+
+.container input:focus {
+  border-color: #25d366;
+  outline: none;
+}
+
+/* Button */
+.container button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 20px;
+  border: none;
+  background: #25d366;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.container button:hover {
+  background: #1ebe57;
+}
+
+/* Link and text */
+.container p {
+  margin-top: 18px;
+  font-size: 14px;
+  color: #444;
+}
+
+.container a {
+  color: #075e54;
+  text-decoration: none;
+}
+
+.container a:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login | WhatsApp Sender</title>
+    <link rel="stylesheet" href="login.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Client Login</h2>
+      <input type="email" id="email" placeholder="Email Address" />
+      <input type="password" id="password" placeholder="Password" />
+      <button onclick="login()">Login</button>
+      <p>Don't have an account? <a href="register.html">Register</a></p>
+    </div>
+
+    <script>
+      async function login() {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        if (!email || !password) {
+          alert("⚠️ Please fill in all fields.");
+          return;
+        }
+
+        try {
+          const res = await fetch(
+            "https://whatsappsenderapp.herokuapp.com/api/login",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            }
+          );
+
+          const data = await res.json();
+
+          if (res.ok) {
+            // Save token and user data
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+
+            alert("✅ Login successful!");
+            window.location.href = "dashboard.html";
+          } else {
+            alert("❌ " + (data.error || "Login failed."));
+          }
+        } catch (err) {
+          console.error("Login error:", err);
+          alert("❌ Could not connect to server.");
+        }
+      }
+    </script>
+  </body>
+</html>

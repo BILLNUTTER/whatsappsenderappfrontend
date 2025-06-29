@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Register | WhatsApp Sender</title>
+    <link rel="stylesheet" href="register.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h2>Register Your Company</h2>
+      <input type="text" id="name" placeholder="Company Name" />
+      <input type="email" id="email" placeholder="Email Address" />
+      <input type="password" id="password" placeholder="Password" />
+      <button onclick="register()">Register</button>
+      <p>Already have an account? <a href="login.html">Login</a></p>
+    </div>
+
+    <script>
+      async function register() {
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        if (!name || !email || !password) {
+          alert("⚠️ Please fill all fields.");
+          return;
+        }
+
+        try {
+          const res = await fetch(
+            "https://whatsappsenderapp.herokuapp.com/api/register",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name, email, password }),
+            }
+          );
+
+          const data = await res.json();
+
+          if (res.ok) {
+            alert("✅ Registration successful!");
+            window.location.href = "connect.html";
+          } else {
+            alert("❌ " + data.error);
+          }
+        } catch (err) {
+          console.error("Error:", err);
+          alert("❌ Could not connect to backend.");
+        }
+      }
+    </script>
+  </body>
+</html>

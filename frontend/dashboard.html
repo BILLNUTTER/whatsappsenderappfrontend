@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WhatsApp Sender Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>📤 Dashboard</h2>
+      <ul>
+        <li onclick="showSection('send')">Send Message</li>
+        <li onclick="showSection('history')">Message History</li>
+      </ul>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Send Message Section -->
+      <div id="send" class="section">
+        <h2>Send WhatsApp Message</h2>
+
+        <div class="form-group">
+          <label for="numbers">Phone Numbers</label><br />
+          <textarea
+            id="numbers"
+            placeholder="e.g. +2547...,+2547..."
+            rows="3"
+            required
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Message</label><br />
+          <textarea
+            id="message"
+            placeholder="Type your message here..."
+            rows="5"
+            required
+          ></textarea>
+        </div>
+
+        <button onclick="send()">Send</button>
+      </div>
+
+      <!-- Message History Section -->
+      <div id="history" class="section" style="display: none">
+        <h2>Message History</h2>
+        <table id="history-table" class="history-table">
+          <thead>
+            <tr>
+              <th>Phone Number</th>
+              <th>Message</th>
+              <th>Time Sent</th>
+            </tr>
+          </thead>
+          <tbody id="history-body"></tbody>
+        </table>
+      </div>
+      <footer class="site-footer">
+        &copy; 2025 BillNutter Services. All rights reserved.
+      </footer>
+    </div>
+    <script src="script-dashboard.js"></script>
+  </body>
+</html>
