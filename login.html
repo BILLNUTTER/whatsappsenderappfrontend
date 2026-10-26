@@ -1,56 +1,82 @@
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Login | WhatsApp Sender</title>
-    <link rel="stylesheet" href="login.css" />
-  </head>
-  <body>
-    <div class="container">
-      <h2>Client Login</h2>
-      <input type="email" id="email" placeholder="Email Address" />
-      <input type="password" id="password" placeholder="Password" />
-      <button onclick="login()">Login</button>
-      <p>Don't have an account? <a href="register.html">Register</a></p>
-    </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | WhatsApp Sender</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Client Login</h2>
 
-    <script>
-      async function login() {
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
+    <form id="login-form">
+      <input
+        type="email"
+        id="email"
+        placeholder="Email Address"
+        autocomplete="username"
+        required
+      >
 
-        if (!email || !password) {
-          alert("⚠️ Please fill in all fields.");
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+        autocomplete="current-password"
+        required
+      >
+
+      <button type="submit" id="login-button">Login</button>
+      <p id="login-status" role="status"></p>
+    </form>
+
+    <p>Don't have an account? <a href="register.html">Register</a></p>
+  </div>
+
+  <script>
+    const API_URL = "http://127.0.0.1:3000";
+
+    document.getElementById("login-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const button = document.getElementById("login-button");
+      const status = document.getElementById("login-status");
+
+      button.disabled = true;
+      button.textContent = "Logging in...";
+      status.textContent = "";
+
+      try {
+        const res = await fetch(`${API_URL}/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include",
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || data.success === false) {
+          status.textContent = data.error || data.message || "Login failed.";
           return;
         }
 
-        try {
-          const res = await fetch(
-            "https://whatsappsenderapp.herokuapp.com/api/login",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email, password }),
-            }
-          );
-
-          const data = await res.json();
-
-          if (res.ok) {
-            // Save token and user data
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("user", JSON.stringify(data.user));
-
-            alert("✅ Login successful!");
-            window.location.href = "dashboard.html";
-          } else {
-            alert("❌ " + (data.error || "Login failed."));
-          }
-        } catch (err) {
-          console.error("Login error:", err);
-          alert("❌ Could not connect to server.");
-        }
+        window.location.href = "connect.html";
+      } catch (err) {
+        console.error("Login error:", err);
+        status.textContent =
+          "Could not connect to the backend. Check that it is running on port 3000.";
+      } finally {
+        button.disabled = false;
+        button.textContent = "Login";
       }
-    </script>
-  </body>
+    });
+  </script>
+</body>
 </html>

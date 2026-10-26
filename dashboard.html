@@ -1,53 +1,99 @@
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>WhatsApp Sender Dashboard</title>
-    <link rel="stylesheet" href="dashboard.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
-  <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <h2>📤 Dashboard</h2>
-      <ul>
-        <li onclick="showSection('send')">Send Message</li>
-        <li onclick="showSection('history')">Message History</li>
-      </ul>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhatsApp Sender Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+  <div class="sidebar">
+    <h2>📤 Dashboard</h2>
 
-    <!-- Main Content Area -->
-    <div class="main-content">
-      <!-- Send Message Section -->
-      <div id="send" class="section">
-        <h2>Send WhatsApp Message</h2>
+    <ul>
+      <li>
+        <button type="button" onclick="showSection('send')">
+          Send Message
+        </button>
+      </li>
 
+      <li>
+        <button type="button" onclick="showSection('history')">
+          Message History
+        </button>
+      </li>
+
+      <li>
+        <button
+          type="button"
+          id="whatsapp-status-button"
+          class="connection-button"
+          aria-live="polite"
+        >
+          Checking WhatsApp status...
+        </button>
+      </li>
+
+      <li>
+        <button type="button" id="logout-button">
+          Logout
+        </button>
+      </li>
+    </ul>
+
+    <p id="whatsapp-status-text" role="status" aria-live="polite">
+      Checking connection...
+    </p>
+
+    <p id="account-status-text" role="status" aria-live="polite"></p>
+  </div>
+
+  <main class="main-content">
+    <section id="send" class="section">
+      <h2>Send WhatsApp Message</h2>
+
+      <form id="send-form">
         <div class="form-group">
-          <label for="numbers">Phone Numbers</label><br />
+          <label for="numbers">Phone Numbers</label>
+
           <textarea
             id="numbers"
-            placeholder="e.g. +2547...,+2547..."
-            rows="3"
+            name="numbers"
+            placeholder="Enter numbers with country codes, separated by commas or new lines"
+            rows="4"
             required
           ></textarea>
+
+          <small>
+            Only message recipients who have agreed to receive your messages.
+          </small>
         </div>
 
         <div class="form-group">
-          <label for="message">Message</label><br />
+          <label for="message">Message</label>
+
           <textarea
             id="message"
+            name="message"
             placeholder="Type your message here..."
             rows="5"
             required
           ></textarea>
         </div>
 
-        <button onclick="send()">Send</button>
-      </div>
+        <button id="send-button" type="submit">
+          Send Message
+        </button>
 
-      <!-- Message History Section -->
-      <div id="history" class="section" style="display: none">
-        <h2>Message History</h2>
+        <p id="send-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="history" class="section" hidden>
+      <h2>Message History</h2>
+
+      <div class="table-container">
         <table id="history-table" class="history-table">
           <thead>
             <tr>
@@ -56,13 +102,227 @@
               <th>Time Sent</th>
             </tr>
           </thead>
+
           <tbody id="history-body"></tbody>
         </table>
       </div>
-      <footer class="site-footer">
-        &copy; 2025 BillNutter Services. All rights reserved.
-      </footer>
-    </div>
-    <script src="script-dashboard.js"></script>
-  </body>
+
+      <p id="history-status" role="status" aria-live="polite"></p>
+
+      <button id="refresh-history-button" type="button">
+        Refresh History
+      </button>
+    </section>
+
+    <footer class="site-footer">
+      &copy; 2026 BillNutter Services. All rights reserved.
+    </footer>
+  </main>
+
+  <script src="script-dashboard.js"></script>
+
+  <script>
+    // Match the hostname used to open the frontend.
+    const API_BASE =
+      window.location.protocol === "file:"
+        ? "http://127.0.0.1:3000"
+        : `${window.location.protocol}//${window.location.hostname}:3000`;
+
+    const whatsappButton = document.getElementById(
+      "whatsapp-status-button"
+    );
+
+    const whatsappStatusText = document.getElementById(
+      "whatsapp-status-text"
+    );
+
+    const accountStatusText = document.getElementById(
+      "account-status-text"
+    );
+
+    const logoutButton = document.getElementById("logout-button");
+
+    let whatsappIsConnected = false;
+    let statusRequestInProgress = false;
+
+    // --------------------------------------------------
+    // WhatsApp connection status
+    // --------------------------------------------------
+
+    async function refreshWhatsAppStatus() {
+      if (statusRequestInProgress) return;
+
+      statusRequestInProgress = true;
+
+      try {
+        const response = await fetch(`${API_BASE}/status`, {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.loggedIn) {
+          whatsappIsConnected = false;
+
+          whatsappButton.textContent = "WhatsApp: Check login";
+          whatsappStatusText.textContent =
+            "Please log in to check WhatsApp status.";
+
+          return;
+        }
+
+        whatsappIsConnected = Boolean(data.connected);
+
+        if (whatsappIsConnected) {
+          whatsappButton.textContent =
+            "WhatsApp: Connected — Disconnect";
+
+          whatsappStatusText.textContent =
+            "WhatsApp is connected and ready to use.";
+        } else {
+          whatsappButton.textContent =
+            "WhatsApp: Not connected — Connect";
+
+          whatsappStatusText.textContent =
+            "WhatsApp is not connected. Click the button to connect.";
+        }
+      } catch (error) {
+        whatsappIsConnected = false;
+
+        whatsappButton.textContent = "WhatsApp: Status unavailable";
+        whatsappStatusText.textContent =
+          "Cannot reach the backend. Make sure the server is running.";
+      } finally {
+        statusRequestInProgress = false;
+      }
+    }
+
+    whatsappButton.addEventListener("click", async () => {
+      if (!whatsappIsConnected) {
+        // Use the existing QR connection page.
+        window.location.href = "connect.html";
+        return;
+      }
+
+      const confirmed = window.confirm(
+        "Disconnect WhatsApp? You may need to scan the QR code again to reconnect."
+      );
+
+      if (!confirmed) return;
+
+      whatsappButton.disabled = true;
+      whatsappButton.textContent = "Disconnecting WhatsApp...";
+      whatsappStatusText.textContent = "Disconnecting WhatsApp...";
+
+      try {
+        const response = await fetch(
+          `${API_BASE}/api/disconnect-whatsapp`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({}),
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error || "Could not disconnect WhatsApp."
+          );
+        }
+
+        whatsappStatusText.textContent =
+          data.message || "WhatsApp disconnected.";
+
+        await refreshWhatsAppStatus();
+      } catch (error) {
+        whatsappStatusText.textContent = error.message;
+        await refreshWhatsAppStatus();
+      } finally {
+        whatsappButton.disabled = false;
+      }
+    });
+
+    // --------------------------------------------------
+    // Website account logout
+    // --------------------------------------------------
+
+    logoutButton.addEventListener("click", async () => {
+      const confirmed = window.confirm(
+        "Are you sure you want to log out of your account?"
+      );
+
+      if (!confirmed) return;
+
+      logoutButton.disabled = true;
+      logoutButton.textContent = "Logging out...";
+      accountStatusText.textContent = "Logging out...";
+
+      try {
+        const response = await fetch(`${API_BASE}/logout`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
+
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
+
+          throw new Error(data.error || "Logout request failed.");
+        }
+
+        window.location.replace("login.html");
+      } catch (error) {
+        accountStatusText.textContent =
+          `${error.message} Please try again.`;
+
+        logoutButton.disabled = false;
+        logoutButton.textContent = "Logout";
+      }
+    });
+
+    // --------------------------------------------------
+    // Message form
+    // --------------------------------------------------
+
+    document
+      .getElementById("send-form")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (typeof send === "function") {
+          send();
+        } else {
+          document.getElementById("send-status").textContent =
+            "The dashboard script did not load. Check script-dashboard.js.";
+        }
+      });
+
+    // --------------------------------------------------
+    // Message history
+    // --------------------------------------------------
+
+    document
+      .getElementById("refresh-history-button")
+      .addEventListener("click", function () {
+        if (typeof loadHistory === "function") {
+          loadHistory();
+        }
+      });
+
+    // Initial status and automatic refresh.
+    refreshWhatsAppStatus();
+    setInterval(refreshWhatsAppStatus, 5000);
+  </script>
+</body>
 </html>

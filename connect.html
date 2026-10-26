@@ -1,24 +1,89 @@
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Link WhatsApp Instance</title>
-    <link rel="stylesheet" href="connect.css" />
-  </head>
-  <body>
-    <div class="container">
-      <h2>🔗 Link WhatsApp Instance</h2>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-      <div id="qr-section">
-        <button onclick="getQR()">Add Instance</button>
-        <img id="qr" src="" alt="QR Code will appear here" />
+  <title>Link WhatsApp Instance | BillNutter Services</title>
+
+  <meta
+    name="description"
+    content="Link your WhatsApp account to BillNutter Services to send broadcast messages from your dashboard."
+  />
+
+  <link rel="stylesheet" href="connect.css" />
+</head>
+
+<body>
+  <main class="container">
+    <h2>🔗 Link WhatsApp Instance</h2>
+
+    <p>
+      Connect your WhatsApp account to send broadcast messages
+      from your dashboard.
+    </p>
+
+    <section id="connection-details" aria-live="polite">
+      <p>
+        <strong>Connection status:</strong>
+        <span id="connection-status">Checking connection...</span>
+      </p>
+
+      <p>
+        <strong>Account status:</strong>
+        <span id="account-status">Checking...</span>
+      </p>
+
+      <p id="connection-message">
+        Checking your WhatsApp connection.
+      </p>
+
+      <div id="qr-container" hidden>
+        <h3>Scan this QR code</h3>
+
+        <p>
+          Open WhatsApp on your phone, go to Linked devices,
+          select Link a device, and scan this code.
+        </p>
+
+        <img
+          id="qr"
+          src=""
+          alt="WhatsApp linking QR code"
+          width="280"
+          height="280"
+        />
+
+        <p id="qr-status" aria-live="polite">
+          Waiting for QR code...
+        </p>
       </div>
+    </section>
 
-      <footer class="site-footer">
-        &copy; 2025 BillNutter Services. All rights reserved.
-      </footer>
+    <section id="qr-section">
+      <button id="add-instance-button" type="button">
+        Add / Link WhatsApp
+      </button>
+    </section>
+
+    <div class="actions">
+      <button id="refresh-status-button" type="button">
+        Refresh Status
+      </button>
+
+      <button id="dashboard-button" type="button">
+        Back to Dashboard
+      </button>
     </div>
 
-    <script src="script-connect.js"></script>
-  </body>
+    <p id="page-error" role="alert" aria-live="polite"></p>
+
+    <footer class="site-footer">
+      &copy; 2026 BillNutter Services. All rights reserved.
+    </footer>
+  </main>
+
+  <script src="./script-connect.js"></script>
+</body>
 </html>
